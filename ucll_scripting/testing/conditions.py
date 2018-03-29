@@ -20,7 +20,7 @@ def function_exists(identifier, module = None):
     parts = identifier.split('.')
 
     if module:
-        current = module.__dict__()
+        current = module.__dict__
     else:
         caller_frame = inspect.currentframe().f_back
         locals = caller_frame.f_locals
