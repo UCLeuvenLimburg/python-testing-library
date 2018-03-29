@@ -11,7 +11,7 @@ def always():
     return True
 
 
-def function_exists(identifier, module = None):
+def defined(identifier, module = None):
     '''
     Checks if a variable with the given name exists.
     If no module is specified, the variable is looked for
