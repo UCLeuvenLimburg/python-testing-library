@@ -25,6 +25,7 @@ def fail():
 def __should_test_run():
     return value(__condition)()
 
+
 def __chain(f, g):
     def chain():
         f()
@@ -88,7 +89,7 @@ def __run_test(test_function):
 
     def signal_skipped():
         value(__skipped)()
-        
+
     if __should_test_run():
         try:
             test_function()
