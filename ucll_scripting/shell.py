@@ -16,6 +16,16 @@ def extended_python_path(path):
         sys.path = old
 
 
+
+def __parse_command_line_arguments():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--limit", help="stop after N failures", type=int, default=0, dest='max_failure_count', metavar='N')
+    parser.add_argument("--tests", help="name of file containing tests", default='tests.py', dest='tests_file', metavar='FILE')
+    
+    return parser.parse_args()
+        
+
 def run_tests():
     def run(filename):
         with open(filename, 'r') as file:
@@ -25,13 +35,7 @@ def run_tests():
             with extended_python_path(os.path.dirname(full_path)):
                 exec(source, {})
 
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--limit", help="stop after N failures", type=int, default=0, dest='max_failure_count', metavar='N')
-    parser.add_argument("--tests", help="name of file containing tests", default='tests.py', dest='tests_file', metavar='FILE')
-    arguments = parser.parse_args()
-
+    arguments = __parse_command_line_arguments()
     test_runner = lambda: run(arguments.tests_file)
 
     if arguments.max_failure_count:
