@@ -1,3 +1,4 @@
+
 from contextlib import contextmanager
 from ucll_scripting.dynamic import create_dynamic_variable, let, value
 from ucll_scripting.testing import *
@@ -62,7 +63,7 @@ class MissingScoreKeeper(ScoreKeeper):
         self.__complain()
 
     def __complain(self):
-        raise NotKeepingScoreError('No ScoreKeeper installed; run scored tests in a keep_scorer() environment.')
+        raise NotKeepingScoresError('No ScoreKeeper installed; run scored tests using score().')
     
     
 class CumulativeScoreKeeper(ScoreKeeper):
