@@ -17,9 +17,6 @@ def extended_python_path(path):
 
 
 def run_tests():
-    def printer(message):
-        return lambda: print(message)
-
     def run(filename):
         with open(filename, 'r') as file:
             source = file.read()
@@ -47,6 +44,4 @@ def run_tests():
 
         test_runner = add_limit(test_runner)
 
-    with on_pass(printer('pass')), on_fail(printer('fail')), on_skip(printer('skip')):
-        s = score(test_runner)
-        print(s)
+    print(score(test_runner))
