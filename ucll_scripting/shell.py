@@ -50,7 +50,8 @@ def __create_test_runner(paths):
             full_path = os.path.abspath(path)
 
             with extended_python_path(os.path.dirname(full_path)):
-                exec(source, {})
+                global_bindings = { 'TEST_FILE': full_path, 'TEST_DIRECTORY': os.path.dirname(full_path) }
+                exec(source, global_bindings)
 
     def run_all():
         for path in paths:
