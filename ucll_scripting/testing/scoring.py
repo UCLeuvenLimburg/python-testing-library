@@ -1,6 +1,5 @@
-
 from contextlib import contextmanager
-from ucll_scripting.dynamic import create_dynamic_variable, let, value
+from ucll_scripting.dynvar import create_dynamic_variable, let, value
 from ucll_scripting.testing import *
 
 
