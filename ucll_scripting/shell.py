@@ -84,7 +84,6 @@ def run_tests():
 
         test_runner = add_limit(test_runner)
 
-    print(reporting)
     with reporting.setup(), count_passes() as passes, count_fails() as fails, count_skips() as skips:
         end_score = score(test_runner)
         print('=' * 40)

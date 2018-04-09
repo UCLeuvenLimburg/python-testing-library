@@ -20,7 +20,7 @@ def check_function_against_reference_implementation(*, tested, reference, compar
     def check(*args, **kwargs):
         positional_parameter_names = __get_positional_parameter_names(reference)
         function_name = value(tested_function_name)
-        positional_argument_strings = [ str(arg) for arg in args ]
+        positional_argument_strings = [ f'{name} = {str(arg)}' for name, arg in zip(positional_parameter_names, args) ]
         keyword_argument_strings = [ f'{k}={v}' for k, vi in kwargs.items() ]
         arguments_string = ', '.join(positional_argument_strings + keyword_argument_strings)
         call_string = f'{function_name}({arguments_string})'
@@ -34,28 +34,32 @@ def check_function_against_reference_implementation(*, tested, reference, compar
                                    format.indent(2, str(failure)))
             else:
                 raise Exception('Bug in reference tests: no failure message set')
-        
+
+            
         def test_function():
-            tested_args = deepcopy(args)
-            tested_kwargs = deepcopy(kwargs)
-            reference_args = deepcopy(args)
-            reference_kwargs = deepcopy(kwargs)
+            def check_return_values(expected, actual):
+                __failure_message.value = f'Comparing return values'
+                assert expected == actual, f'Expected {expected}, got {actual}'
+
+            def check_positional_argument(index, name, expected, actual):
+                __failure_message.value = f'Comparing {name} (positional argument #{index + 1})'
+                assert expected == actual, f'Expected {expected}, got {actual}'
+                
+            def check_positional_arguments(names, expecteds, actuals):
+                for (index, name, expected, actual) in zip(range(len(names)), names, expecteds, actuals):
+                    check_positional_argument(index, name, expected, actual)
+                
+            actual_args = deepcopy(args)
+            actual_kwargs = deepcopy(kwargs)
+            expected_args = deepcopy(args)
+            expected_kwargs = deepcopy(kwargs)
 
             __failure_message.value = f'Exception occurred during function call'
-            
-            actual_result = tested(*tested_args, **tested_kwargs)
-            expected_result = reference(*tested_args, **tested_kwargs)
+            actual_result = tested(*actual_args, **actual_kwargs)
+            expected_result = reference(*expected_args, **expected_kwargs)
 
-            __failure_message.value = f'Comparing return values'
-            assert expected_result == actual_result, f'Expected {expected_result}, got {actual_result}'
-
-            for i in range(len(args)):
-                parameter_name = positional_parameter_names[i]
-                __failure_message.value = f'Comparing {parameter_name} (positional argument #{i+1})'
-
-                expected = reference_args[i]
-                actual = tested_args[i]
-                assert expected == actual, f'Expected {expected}, got {actual}'
+            check_return_values(expected=expected_result, actual=actual_result)
+            check_positional_arguments(positional_parameter_names, expected_args, actual_args)
                 
 
         with reporting.default_failure_message_generator(failure_message_generator), \
