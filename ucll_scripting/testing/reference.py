@@ -5,15 +5,20 @@ import ucll_scripting.formatting as format
 import ucll_scripting.testing.reporting as reporting
 from ucll_scripting.testing.assertions import *
 from copy import deepcopy
-
+import inspect
 
 tested_function_name = create_dynamic_variable()
 __failure_message = create_dynamic_variable()
 
 
+def __get_positional_parameter_names(function):
+    return inspect.getargspec(function)[0]
+
+
 @contextmanager
 def check_function_against_reference_implementation(*, tested, reference, comparison=None):
     def check(*args, **kwargs):
+        positional_parameter_names = __get_positional_parameter_names(reference)
         function_name = value(tested_function_name)
         positional_argument_strings = [ str(arg) for arg in args ]
         keyword_argument_strings = [ f'{k}={v}' for k, vi in kwargs.items() ]
@@ -45,7 +50,8 @@ def check_function_against_reference_implementation(*, tested, reference, compar
             assert expected_result == actual_result, f'Expected {expected_result}, got {actual_result}'
 
             for i in range(len(args)):
-                __failure_message.value = f'Comparing positional argument #{i+1}'
+                parameter_name = positional_parameter_names[i]
+                __failure_message.value = f'Comparing {parameter_name} (positional argument #{i+1})'
 
                 expected = reference_args[i]
                 actual = tested_args[i]
