@@ -36,13 +36,21 @@ def check_function_against_reference_implementation(*, tested, reference, compar
             reference_args = deepcopy(args)
             reference_kwargs = deepcopy(kwargs)
 
-            __failure_message.value = f'While '
+            __failure_message.value = f'Exception occurred during function call'
             
             actual_result = tested(*tested_args, **tested_kwargs)
             expected_result = reference(*tested_args, **tested_kwargs)
 
             __failure_message.value = f'Comparing return values'
-            assert actual_result == expected_result, f'Expected {expected_result}, got {actual_result}'
+            assert expected_result == actual_result, f'Expected {expected_result}, got {actual_result}'
+
+            for i in range(len(args)):
+                __failure_message.value = f'Comparing positional argument #{i+1}'
+
+                expected = reference_args[i]
+                actual = tested_args[i]
+                assert expected == actual, f'Expected {expected}, got {actual}'
+                
 
         with reporting.default_failure_message_generator(failure_message_generator), \
              let(__failure_message, None):
