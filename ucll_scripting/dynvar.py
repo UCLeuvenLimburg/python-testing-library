@@ -6,11 +6,11 @@ class __DynamicVariable:
         self.__value = initial_value
 
     @property
-    def _value(self):
+    def value(self):
         return self.__value
 
-    @_value.setter
-    def _value(self, x):
+    @value.setter
+    def value(self, x):
         self.__value = x
 
 
@@ -20,14 +20,13 @@ def create_dynamic_variable(initial_value = None):
 
 @contextmanager
 def let(dynamic_variable, value):
-    old_value = dynamic_variable._value
-    dynamic_variable._value = value
+    old_value = dynamic_variable.value
+    dynamic_variable.value = value
 
     try:
         yield
     finally:
-        dynamic_variable._value = old_value
-
+        dynamic_variable.value = old_value
 
 def value(dynamic_variable):
-    return dynamic_variable._value
+    return dynamic_variable.value

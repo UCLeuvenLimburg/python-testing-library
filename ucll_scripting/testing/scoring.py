@@ -92,7 +92,7 @@ def score(func):
     def passed():
         value(__scorer).test_passed()
 
-    def failed():
+    def failed(*args, **kwargs):
         value(__scorer).test_failed()
         
     def skipped():

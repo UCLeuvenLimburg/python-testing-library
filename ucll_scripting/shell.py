@@ -1,12 +1,18 @@
 from contextlib import contextmanager
 from ucll_scripting.testing import *
+from ucll_scripting.dynvar import *
+import ucll_scripting.testing.reporting as reporting
+from ucll_scripting.testing.counting import *
 import argparse
 import sys
 import os
 
 
+test_filename = create_dynamic_variable()
+test_directory = create_dynamic_variable()
+
 @contextmanager
-def extended_python_path(path):
+def __extended_python_path(path):
     old = sys.path
 
     try:
@@ -44,14 +50,18 @@ def __find_tests_in_subdirectories(filename, root='.'):
     return ( os.path.join(subdirectory, filename) for subdirectory in __subdirectories(root) if __contains_tests(subdirectory, filename) )
 
 def __create_test_runner(paths):
-    def run_single(path):
-        with open(path, 'r') as file:
+    def run_single(test_file_path):
+        with open(test_file_path, 'r') as file:
             source = file.read()
-            full_path = os.path.abspath(path)
+            
+        absolute_test_file_path = os.path.abspath(test_file_path)
+        absolute_test_directory_path = os.path.dirname(absolute_test_file_path)
 
-            with extended_python_path(os.path.dirname(full_path)):
-                global_bindings = { 'TEST_FILE': full_path, 'TEST_DIRECTORY': os.path.dirname(full_path) }
-                exec(source, global_bindings)
+        with __extended_python_path(absolute_test_directory_path), \
+             let (test_filename, absolute_test_file_path),         \
+             let (test_directory, absolute_test_directory_path):
+            global_bindings = {}
+            exec(source, global_bindings)
 
     def run_all():
         for path in paths:
@@ -60,9 +70,6 @@ def __create_test_runner(paths):
     return run_all
 
 def run_tests():
-    def printer(message):
-        return lambda: print(message)
-
     arguments = __parse_command_line_arguments()
     paths = __find_tests_in_subdirectories(arguments.tests_filename)
     test_runner = __create_test_runner(paths)
@@ -77,5 +84,9 @@ def run_tests():
 
         test_runner = add_limit(test_runner)
 
-    with on_pass(printer('pass')), on_fail(printer('fail')), on_skip(printer('skip')):
-        print(score(test_runner))
+    print(reporting)
+    with reporting.setup(), count_passes() as passes, count_fails() as fails, count_skips() as skips:
+        end_score = score(test_runner)
+        print('=' * 40)
+        print(f'{passes.count} pass(es), {fails.count} failure(s), {skips.count} skip(s)')
+        print(f'Total score: {end_score}')

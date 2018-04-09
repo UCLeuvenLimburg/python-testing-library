@@ -51,5 +51,3 @@ class CumulativeScoreKeeperTests(unittest.TestCase):
                 fail()
             
             assert score(tested) == Score(1, 2)
-
-    pass

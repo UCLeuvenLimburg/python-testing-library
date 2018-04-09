@@ -47,7 +47,7 @@ def limit_failures(n = 1):
     '''
     failed_count = 0
     
-    def failed():
+    def failed(**kwargs):
         nonlocal failed_count
         failed_count += 1
 
