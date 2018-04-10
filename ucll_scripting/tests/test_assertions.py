@@ -53,4 +53,14 @@ class AssertionTests(unittest.TestCase):
         assert not same_truthiness(expected=True, actual={})
         assert not same_truthiness(expected='bc', actual='')
 
-        
+    def test_permutation(self):
+        assert permutation(expected=[], actual=[])
+        assert permutation(expected=[1], actual=[1])
+        assert permutation(expected=[1, 2], actual=[1, 2])
+        assert permutation(expected=[1, 2], actual=[2, 1])
+        assert permutation(expected=[1, 2, 3], actual=[2, 1, 3])
+        assert permutation(expected=[1, 1, 2, 2, 3, 3], actual=[1, 2, 3, 1, 2, 3])
+
+        assert not permutation(expected=[], actual=[1])
+        assert not permutation(expected=[1], actual=[])
+        assert not permutation(expected=[1, 2], actual=[1, 2, 2])

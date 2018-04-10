@@ -72,4 +72,19 @@ def same_truthiness(*, expected, actual):
         return falsey(actual=actual)
 
 
+def permutation(*, expected, actual):
+    def frequencies(xs):
+        result = {}
 
+        for x in xs:
+            result[x] = result.setdefault(x, 0) + 1
+
+        return result
+
+    expected_frequencies = frequencies(expected)
+    actual_frequencies = frequencies(actual)
+
+    if expected_frequencies == actual_frequencies:
+        return Success()
+    else:
+        return Failure(f'{actual} should be a permutation of {expected}')
